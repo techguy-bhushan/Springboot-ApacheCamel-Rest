@@ -1,4 +1,6 @@
-package com.src;
+package com.src.service;
+
+import com.src.domain.User;
 
 import java.util.Collection;
 
@@ -10,7 +12,10 @@ public interface UserService {
 
     void updateUser(User user);
 
-    void create(User user);
+    User create(User user);
 
     void delete(Integer id);
+
+    long count();
+
 }

@@ -1,5 +1,7 @@
-package com.src;
+package com.src.route;
 
+import com.src.domain.User;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.model.rest.RestParamType;
@@ -18,7 +20,12 @@ public class Route extends RouteBuilder {
                 .apiProperty("cors", "true");
 
 
-
+        onException(RuntimeException.class)
+                .maximumRedeliveries(1)
+                .retryAttemptedLogLevel(LoggingLevel.WARN)
+                .backOffMultiplier(5)
+                .maximumRedeliveryDelay(60000)
+                .useExponentialBackOff();
 
 
         rest("/users").description("User REST service")
@@ -27,13 +34,17 @@ public class Route extends RouteBuilder {
 
                 .get().description("Find all users").outType(User[].class)
                 .responseMessage().code(200).message("All users successfully returned").endResponseMessage()
+                .route()
                 .to("bean:userService?method=findUsers")
+                .endRest()
 
                 .get("/{id}").description("Find user by ID")
                 .outType(User.class)
                 .param().name("id").type(RestParamType.path).description("The ID of the user").dataType("integer").endParam()
                 .responseMessage().code(200).message("User successfully returned").endResponseMessage()
+                .route()
                 .to("bean:userService?method=findUser(${header.id})")
+                .endRest()
 
                 .post().description("Create a user").type(User.class)
                 .param().name("body").type(RestParamType.body).description("The user to create").endParam()

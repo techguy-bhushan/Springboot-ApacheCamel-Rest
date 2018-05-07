@@ -1,4 +1,4 @@
-package com.src;
+package com.src.config;
 
 import org.apache.camel.component.servlet.CamelHttpTransportServlet;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;

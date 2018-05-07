@@ -1,12 +1,17 @@
-package com.src;
+package com.src.service;
 
+import com.src.domain.User;
+import com.src.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.logging.Logger;
 
 @Service("userService")
 public class UserServiceImpl implements UserService {
+
+    Logger logger = Logger.getLogger(UserServiceImpl.class.getName());
 
     @Autowired
     private UserRepository userRepository;
@@ -33,7 +38,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void create(User user) {
-        userRepository.save(user);
+    public User create(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
+    public long count() {
+        return userRepository.count();
     }
 }
