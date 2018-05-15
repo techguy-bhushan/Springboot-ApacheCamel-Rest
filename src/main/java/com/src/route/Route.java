@@ -1,6 +1,7 @@
 package com.src.route;
 
 import com.src.domain.User;
+import com.src.errors.CustomException;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
@@ -20,12 +21,14 @@ public class Route extends RouteBuilder {
                 .apiProperty("cors", "true");
 
 
-        onException(RuntimeException.class)
-                .maximumRedeliveries(1)
+        onException(CustomException.class)
+                .maximumRedeliveries(2)
                 .retryAttemptedLogLevel(LoggingLevel.WARN)
-                .backOffMultiplier(5)
+                .backOffMultiplier(2)
                 .maximumRedeliveryDelay(60000)
-                .useExponentialBackOff();
+                .useExponentialBackOff()
+                .handled(true)
+                .to("bean:camelRetryExceptionHandlerService?method=handleCustomException");
 
 
         rest("/users").description("User REST service")
